@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Генератор акта</title>
+    <!-- Подключение библиотек для генерации PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         .form-container {
             max-width: 800px;
@@ -166,6 +169,26 @@
                 margin: 10px 0;
             }
         }
+
+        /* Стили для PDF-шаблона */
+        .pdf-content {
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            padding: 20px;
+        }
+        .pdf-content .center { text-align: center; }
+        .pdf-content .right { text-align: right; }
+        .pdf-content .left { text-align: left; }
+        .pdf-content h1 { font-size: 16pt; font-weight: bold; margin-bottom: 10px; }
+        .pdf-content h2 { font-size: 14pt; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+        .pdf-content h3 { font-size: 12pt; font-weight: bold; margin-top: 10px; margin-bottom: 10px; }
+        .pdf-content p { margin: 5px 0; }
+        .pdf-content table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .pdf-content th, .pdf-content td { border: 1px solid black; padding: 8px; text-align: left; }
+        .pdf-content th { background-color: #f2f2f2; font-weight: bold; }
+        .pdf-content .signature { margin-top: 30px; font-style: italic; }
+        .pdf-content .date { margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -363,79 +386,60 @@
                 `;
             });
 
-            const actHtml = `
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Акт №${actNumber}</title>
-    <style>
-        body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 20px; line-height: 1.5; }
-        .center { text-align: center; }
-        .right { text-align: right; }
-        .left { text-align: left; }
-        h1 { font-size: 16pt; font-weight: bold; margin-bottom: 10px; }
-        h2 { font-size: 14pt; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
-        h3 { font-size: 12pt; font-weight: bold; margin-top: 10px; margin-bottom: 10px; }
-        p { margin: 5px 0; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { border: 1px solid black; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; font-weight: bold; }
-        .signature { margin-top: 30px; font-style: italic; }
-        .date { margin-top: 10px; }
-        @media print { body { margin: 0; padding: 0; } }
-    </style>
-</head>
-<body>
-    <div class="center">
-        <h1>${selectedEntity.name}</h1>
-        <p>ИНН/КПП ${selectedEntity.innKpp}</p>
-        <p>${selectedEntity.address}</p>
-    </div>
-    <div class="right">
-        <h3>УТВЕРЖДАЮ</h3>
-        <p>Генеральный директор</p>
-        <p class="signature">${selectedEntity.director}</p>
-        <p>(подпись) _______________</p>
-        <p class="date">${formattedCurrentDate}</p>
-    </div>
-    <div class="center">
-        <h2>Акт № ${actNumber}</h2>
-        <h3>ОБ УСТАНОВЛЕННОМ РАСХОЖДЕНИИ ПО КОЛИЧЕСТВУ И КАЧЕСТВУ ПРИ ПРИЕМКЕ ТОВАРНО-МАТЕРИАЛЬНЫХ ЦЕННОСТЕЙ</h3>
-    </div>
-    <p class="left">Место приемки товара: Санкт-Петербург, Шлиссельбургский проспект, дом 3-7, БЦ "Эврика"</p>
-    <p class="left">Поставщик: ${supplier}</p>
-    <p class="left">По сопроводительным документам: счет/фактура № ${invoiceNumber} от ${formattedInvoiceDate}</p>
-    <table>
-        <thead>
-            <tr>
-                <th>Бренд</th>
-                <th>Артикул</th>
-                <th>Количество</th>
-                <th>Стоимость</th>
-                <th>Описание дефекта</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${detailsHtml}
-        </tbody>
-    </table>
-    <p class="left">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</p>
-    <p class="left">Представитель грузополучателя: ${receiver}</p>
-    <p class="left">Представитель грузоотправителя: ${sender}</p>
-</body>
-</html>
+            const actContent = `
+                <div class="pdf-content">
+                    <div class="center">
+                        <h1>${selectedEntity.name}</h1>
+                        <p>ИНН/КПП ${selectedEntity.innKpp}</p>
+                        <p>${selectedEntity.address}</p>
+                    </div>
+                    <div class="right">
+                        <h3>УТВЕРЖДАЮ</h3>
+                        <p>Генеральный директор</p>
+                        <p class="signature">${selectedEntity.director}</p>
+                        <p>(подпись) _______________</p>
+                        <p class="date">${formattedCurrentDate}</p>
+                    </div>
+                    <div class="center">
+                        <h2>Акт № ${actNumber}</h2>
+                        <h3>ОБ УСТАНОВЛЕННОМ РАСХОЖДЕНИИ ПО КОЛИЧЕСТВУ И КАЧЕСТВУ ПРИ ПРИЕМКЕ ТОВАРНО-МАТЕРИАЛЬНЫХ ЦЕННОСТЕЙ</h3>
+                    </div>
+                    <p class="left">Место приемки товара: Санкт-Петербург, Шлиссельбургский проспект, дом 3-7, БЦ "Эврика"</p>
+                    <p class="left">Поставщик: ${supplier}</p>
+                    <p class="left">По сопроводительным документам: счет/фактура № ${invoiceNumber} от ${formattedInvoiceDate}</p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Бренд</th>
+                                <th>Артикул</th>
+                                <th>Количество</th>
+                                <th>Стоимость</th>
+                                <th>Описание дефекта</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${detailsHtml}
+                        </tbody>
+                    </table>
+                    <p class="left">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</p>
+                    <p class="left">Представитель грузополучателя: ${receiver}</p>
+                    <p class="left">Представитель грузоотправителя: ${sender}</p>
+                </div>
             `;
 
-            const blob = new Blob([actHtml], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Акт_№${actNumber}_${supplier}.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            // Генерация PDF с использованием html2pdf.js
+            const element = document.createElement('div');
+            element.innerHTML = actContent;
+            html2pdf()
+                .from(element)
+                .set({
+                    margin: 10,
+                    filename: `Акт_№${actNumber}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                })
+                .save();
         }
     </script>
 </body>
