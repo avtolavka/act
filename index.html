@@ -171,7 +171,7 @@
             }
         }
 
-        /* Стили для PDF-шаблона (отдельные от формы) */
+        /* Стили для PDF-шаблона, соответствующие предоставленному образцу */
         .pdf-content {
             font-family: 'Times New Roman', serif;
             font-size: 12pt;
@@ -187,7 +187,7 @@
         .pdf-content p { margin: 5px 0; }
         .pdf-content table { width: 100%; border-collapse: collapse; margin: 20px 0; }
         .pdf-content th, .pdf-content td { border: 1px solid black; padding: 8px; text-align: left; }
-        .pdf-content th { background-color: #f2f2f2; font-weight: bold; }
+        .pdf-content th { border: 1px solid black; font-weight: bold; background-color: transparent; } /* Убрано фоновое выделение заголовков таблицы */
         .pdf-content .signature { margin-top: 30px; font-style: italic; }
         .pdf-content .date { margin-top: 10px; }
     </style>
@@ -402,8 +402,7 @@
                         <p class="date">${formattedCurrentDate}</p>
                     </div>
                     <div class="center">
-                        <h2>Акт № ${actNumber}</h2>
-                        <h3>ОБ УСТАНОВЛЕННОМ РАСХОЖДЕНИИ ПО КОЛИЧЕСТВУ И КАЧЕСТВУ ПРИ ПРИЕМКЕ ТОВАРНО-МАТЕРИАЛЬНЫХ ЦЕННОСТЕЙ</h3>
+                        <h2>Акт № ${actNumber} ОБ УСТАНОВЛЕННОМ РАСХОЖДЕНИИ ПО КОЛИЧЕСТВУ И КАЧЕСТВУ ПРИ ПРИЕМКЕ ТОВАРНО-МАТЕРИАЛЬНЫХ ЦЕННОСТЕЙ</h2>
                     </div>
                     <p class="left">Место приемки товара: Санкт-Петербург, Шлиссельбургский проспект, дом 3-7, БЦ "Эврика"</p>
                     <p class="left">Поставщик: ${supplier}</p>
@@ -435,12 +434,14 @@
                 .from(element)
                 .set({
                     margin: 10,
-                    filename: `Акт_№${actNumber}_${supplier}.pdf`,
+                    filename: `Акт_№${actNumber}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
+                    html2canvas: { scale: 2, useCORS: true },
                     jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 })
-                .save();
+                .save()
+                .then(() => console.log('PDF успешно сгенерирован'))
+                .catch((error) => console.error('Ошибка генерации PDF:', error));
         }
     </script>
 </body>
