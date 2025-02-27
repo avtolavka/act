@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Генератор акта</title>
+    <style>
+        .form-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        .inline-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .inline-row label {
+            margin-bottom: 0;
+            flex: 1;
+            min-width: 150px;
+        }
+        .inline-row input {
+            flex: 2;
+            margin-bottom: 0;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px 0;
+            box-shadow: 0 2px 5px rgba(0,123,255,0.3);
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: #222;
+        }
+        #details-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .detail-row {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .detail-row .detail-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .detail-row .detail-group label {
+            min-width: 120px;
+            font-weight: bold;
+            font-size: 14px;
+            color: #444;
+            text-align: left;
+        }
+        .detail-row .detail-group input {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .detail-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(220,53,69,0.3);
+        }
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+        .add-details-btn {
+            background-color: #28a745;
+            box-shadow: 0 2px 5px rgba(40,167,69,0.3);
+        }
+        .add-details-btn:hover {
+            background-color: #218838;
+        }
+        @media (max-width: 600px) {
+            .form-container {
+                margin: 10px;
+                padding: 15px;
+            }
+            .inline-row {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .inline-row label {
+                min-width: auto;
+                text-align: left;
+            }
+            .inline-row input {
+                width: 100%;
+            }
+            .detail-row {
+                padding: 10px;
+            }
+            .detail-row .detail-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .detail-row .detail-group label {
+                min-width: auto;
+                margin-bottom: 5px;
+            }
+            .detail-row .detail-group input {
+                min-width: 100%;
+                margin-bottom: 10px;
+            }
+            .detail-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            button {
+                width: 100%;
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Генератор акта об установленном расхождении</h2>
+        <form>
+            <label for="legalEntity">Юридическое лицо:</label>
+            <select id="legalEntity" name="legalEntity">
+                <option value="0">ООО Автолавка Плюс</option>
+                <option value="1">ООО ЗАПОПТТОРГ</option>
+                <option value="2">ООО СФЕРА</option>
+                <option value="3">ООО АВТОЛАВКА</option>
+            </select>
+
+            <label for="supplier">Наименование поставщика:</label>
+            <input type="text" id="supplier" name="supplier" placeholder="Введите наименование поставщика" required>
+
+            <div class="inline-row">
+                <label for="invoiceNumber">Счет/фактура №:</label>
+                <input type="text" id="invoiceNumber" name="invoiceNumber" placeholder="Введите номер счета/фактуры" required>
+            </div>
+            <div class="inline-row">
+                <label for="invoiceDate">Дата счет/фактуры:</label>
+                <input type="date" id="invoiceDate" name="invoiceDate" required>
+            </div>
+
+            <h3>Детали</h3>
+            <div id="details-container">
+                <div class="detail-row">
+                    <div class="detail-group">
+                        <label for="brand-1">Бренд:</label>
+                        <input type="text" id="brand-1" placeholder="Введите бренд" required>
+                    </div>
+                    <div class="detail-group">
+                        <label for="article-1">Артикул:</label>
+                        <input type="text" id="article-1" placeholder="Введите артикул" required>
+                    </div>
+                    <div class="detail-group">
+                        <label for="quantity-1">Количество:</label>
+                        <input type="number" id="quantity-1" placeholder="Введите количество" min="0" required>
+                    </div>
+                    <div class="detail-group">
+                        <label for="cost-1">Стоимость:</label>
+                        <input type="number" id="cost-1" placeholder="Введите стоимость" step="0.01" min="0" required>
+                    </div>
+                    <div class="detail-group">
+                        <label for="defect-1">Описание дефекта:</label>
+                        <input type="text" id="defect-1" placeholder="Введите описание дефекта" required>
+                    </div>
+                    <div class="detail-actions">
+                        <button type="button" class="remove-btn" onclick="removeDetail(this)">Удалить</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="add-details-btn" onclick="addDetail()">Добавить детали</button>
+
+            <label for="receiver">Представитель грузополучателя:</label>
+            <input type="text" id="receiver" name="receiver" placeholder="Введите ФИО представителя грузополучателя" required>
+
+            <label for="sender">Представитель грузоотправителя:</label>
+            <input type="text" id="sender" name="sender" placeholder="Введите ФИО представителя грузоотправителя" required>
+
+            <button type="button" onclick="generateAct()">Создать акт</button>
+        </form>
+    </div>
+
+    <script>
+        const legalEntities = [
+            {
+                name: 'ООО Автолавка Плюс',
+                innKpp: '7811663724/781101001',
+                address: 'г. Санкт-Петербург, вн.тер.г. Муниципальный округ Рыбацкое, пр-кт Шлиссельбургский, д. 7, литера А, офис 22/о',
+                director: 'Харин В.В.'
+            },
+            {
+                name: 'ООО ЗАПОПТТОРГ',
+                innKpp: '7811761351/781101001',
+                address: 'г. Санкт-Петербург, вн.тер.г. Муниципальный округ Рыбацкое, пр-кт Шлиссельбургский, д. 7, литера А, офис 105',
+                director: 'Воробейков Д.В.'
+            },
+            {
+                name: 'ООО СФЕРА',
+                innKpp: '7811072432/781101001',
+                address: 'г. Санкт-Петербург, вн.тер.г. муниципальный округ Невская застава, ул. Фаянсовая, д. 22, литера Ж, помещ. 5н офис 12',
+                director: 'Богданов И.И.'
+            },
+            {
+                name: 'ООО АВТОЛАВКА',
+                innKpp: '7811634307/781101001',
+                address: 'г. Санкт-Петербург, вн.тер.г. Муниципальный округ Народный, ул. Народная, д. 20, литера Ж, кв. 19',
+                director: 'Воробейков Д.В.'
+            }
+        ];
+
+        let detailCounter = 1;
+
+        function addDetail() {
+            detailCounter++;
+            const container = document.getElementById('details-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'detail-row';
+            newRow.innerHTML = `
+                <div class="detail-group">
+                    <label for="brand-${detailCounter}">Бренд:</label>
+                    <input type="text" id="brand-${detailCounter}" placeholder="Введите бренд" required>
+                </div>
+                <div class="detail-group">
+                    <label for="article-${detailCounter}">Артикул:</label>
+                    <input type="text" id="article-${detailCounter}" placeholder="Введите артикул" required>
+                </div>
+                <div class="detail-group">
+                    <label for="quantity-${detailCounter}">Количество:</label>
+                    <input type="number" id="quantity-${detailCounter}" placeholder="Введите количество" min="0" required>
+                </div>
+                <div class="detail-group">
+                    <label for="cost-${detailCounter}">Стоимость:</label>
+                    <input type="number" id="cost-${detailCounter}" placeholder="Введите стоимость" step="0.01" min="0" required>
+                </div>
+                <div class="detail-group">
+                    <label for="defect-${detailCounter}">Описание дефекта:</label>
+                    <input type="text" id="defect-${detailCounter}" placeholder="Введите описание дефекта" required>
+                </div>
+                <div class="detail-actions">
+                    <button type="button" class="remove-btn" onclick="removeDetail(this)">Удалить</button>
+                </div>
+            `;
+            container.appendChild(newRow);
+        }
+
+        function removeDetail(button) {
+            const row = button.parentElement.parentElement; // Поднимаемся к .detail-row
+            row.remove();
+        }
+
+        function getCurrentDate() {
+            const today = new Date();
+            return today.toISOString().split('T')[0]; // Формат YYYY-MM-DD
+        }
+
+        function generateAct() {
+            const legalEntityIndex = document.getElementById('legalEntity').value;
+            const selectedEntity = legalEntities[legalEntityIndex];
+            const supplier = document.getElementById('supplier').value;
+            const invoiceNumber = document.getElementById('invoiceNumber').value;
+            const invoiceDate = new Date(document.getElementById('invoiceDate').value);
+            const receiver = document.getElementById('receiver').value;
+            const sender = document.getElementById('sender').value;
+
+            const details = [];
+            const detailRows = document.querySelectorAll('.detail-row');
+            detailRows.forEach(row => {
+                const brand = row.querySelector('input[id^="brand"]').value;
+                const article = row.querySelector('input[id^="article"]').value;
+                const quantity = row.querySelector('input[id^="quantity"]').value;
+                const cost = row.querySelector('input[id^="cost"]').value;
+                const defect = row.querySelector('input[id^="defect"]').value;
+                if (brand && article && quantity && cost && defect) {
+                    details.push({ brand, article, quantity, cost, defect });
+                }
+            });
+
+            const currentDate = getCurrentDate();
+            let actNumber = localStorage.getItem('actNumber');
+            let lastActDate = localStorage.getItem('lastActDate');
+
+            if (!lastActDate || lastActDate !== currentDate) {
+                actNumber = 1;
+            } else {
+                actNumber = parseInt(actNumber) + 1;
+            }
+            localStorage.setItem('actNumber', actNumber);
+            localStorage.setItem('lastActDate', currentDate);
+
+            const formattedInvoiceDate = invoiceDate.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+            const formattedCurrentDate = new Date().toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+
+            let detailsHtml = '';
+            details.forEach(detail => {
+                detailsHtml += `
+                    <tr>
+                        <td>${detail.brand}</td>
+                        <td>${detail.article}</td>
+                        <td>${detail.quantity}</td>
+                        <td>${detail.cost}</td>
+                        <td>${detail.defect}</td>
+                    </tr>
+                `;
+            });
+
+            const actHtml = `
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Акт №${actNumber}</title>
+    <style>
+        body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 20px; line-height: 1.5; }
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .left { text-align: left; }
+        h1 { font-size: 16pt; font-weight: bold; margin-bottom: 10px; }
+        h2 { font-size: 14pt; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+        h3 { font-size: 12pt; font-weight: bold; margin-top: 10px; margin-bottom: 10px; }
+        p { margin: 5px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; font-weight: bold; }
+        .signature { margin-top: 30px; font-style: italic; }
+        .date { margin-top: 10px; }
+        @media print { body { margin: 0; padding: 0; } }
+    </style>
+</head>
+<body>
+    <div class="center">
+        <h1>${selectedEntity.name}</h1>
+        <p>ИНН/КПП ${selectedEntity.innKpp}</p>
+        <p>${selectedEntity.address}</p>
+    </div>
+    <div class="right">
+        <h3>УТВЕРЖДАЮ</h3>
+        <p>Генеральный директор</p>
+        <p class="signature">${selectedEntity.director}</p>
+        <p>(подпись) _______________</p>
+        <p class="date">${formattedCurrentDate}</p>
+    </div>
+    <div class="center">
+        <h2>Акт № ${actNumber}</h2>
+        <h3>ОБ УСТАНОВЛЕННОМ РАСХОЖДЕНИИ ПО КОЛИЧЕСТВУ И КАЧЕСТВУ ПРИ ПРИЕМКЕ ТОВАРНО-МАТЕРИАЛЬНЫХ ЦЕННОСТЕЙ</h3>
+    </div>
+    <p class="left">Место приемки товара: Санкт-Петербург, Шлиссельбургский проспект, дом 3-7, БЦ "Эврика"</p>
+    <p class="left">Поставщик: ${supplier}</p>
+    <p class="left">По сопроводительным документам: счет/фактура № ${invoiceNumber} от ${formattedInvoiceDate}</p>
+    <table>
+        <thead>
+            <tr>
+                <th>Бренд</th>
+                <th>Артикул</th>
+                <th>Количество</th>
+                <th>Стоимость</th>
+                <th>Описание дефекта</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${detailsHtml}
+        </tbody>
+    </table>
+    <p class="left">По остальным товарно-материальным ценностям, перечисленным в сопроводительных документах поставщика, расхождений в количестве и качестве нет.</p>
+    <p class="left">Представитель грузополучателя: ${receiver}</p>
+    <p class="left">Представитель грузоотправителя: ${sender}</p>
+</body>
+</html>
+            `;
+
+            const blob = new Blob([actHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Акт_№${actNumber}.html`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
